@@ -21,4 +21,6 @@ public interface RecieverService {
     void compeletedReciever(@NotBlank String recieverId)
             throws RecieverCollectionException;
 
+    String checkStatus(String requestId) throws RecieverCollectionException;
+
 }

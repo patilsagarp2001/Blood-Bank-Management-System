@@ -180,6 +180,16 @@ public class HomeController {
 
     }
 
+    @GetMapping("/CheckStatus")
+    public ResponseEntity<?> checkStatus(@RequestParam(name = "requestId") String requestId)
+            throws RecieverCollectionException {
+        try {
+            return new ResponseEntity<>(recieverService.checkStatus(requestId), HttpStatus.OK);
+        } catch (RecieverCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
     @DeleteMapping("/Reciever/{recieverId}")
     public ResponseEntity<?> deleteReciever(@PathVariable String recieverId)
             throws ConstraintViolationException, RecieverCollectionException {

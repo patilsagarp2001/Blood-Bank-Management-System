@@ -64,6 +64,18 @@ public class RecieverServiceImpl implements RecieverService {
     }
 
     @Override
+    public String checkStatus(String requestId) throws RecieverCollectionException {
+        // TODO Auto-generated method stub
+        Optional<?> o = recieverRepository.findBy_id(requestId);
+        if (o.isPresent()) {
+            Reciever r = (Reciever) o.get();
+            return r.getStatus();
+        } else {
+            throw new RecieverCollectionException(RecieverCollectionException.NotFoundException(requestId));
+        }
+    }
+
+    @Override
     public void deleteById(String recieverId) throws ConstraintViolationException, RecieverCollectionException {
         // TODO Auto-generated method stub
         Optional<?> updateData = recieverRepository.findBy_id(recieverId);
