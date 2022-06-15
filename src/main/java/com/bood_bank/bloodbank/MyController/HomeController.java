@@ -1,22 +1,39 @@
 package com.bood_bank.bloodbank.MyController;
 
+import java.util.List;
+
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bood_bank.bloodbank.entities.BloodGroup;
 import com.bood_bank.bloodbank.entities.Donor;
 import com.bood_bank.bloodbank.entities.Organization;
+import com.bood_bank.bloodbank.exception.DonorCollectionException;
+import com.bood_bank.bloodbank.exception.OrganizationCollectionException;
 import com.bood_bank.bloodbank.service.BloodService;
 import com.bood_bank.bloodbank.service.DonorService;
 import com.bood_bank.bloodbank.service.OrganizationService;
 import com.bood_bank.bloodbank.service.StockAsPerOrganizationService;
+import com.mongodb.lang.NonNull;
 
 @RestController
+@Validated
 public class HomeController {
 
     @Autowired
@@ -31,8 +48,35 @@ public class HomeController {
     private StockAsPerOrganizationService stockAsPerOrganizationService;
 
     @PostMapping("/organization")
-    public ResponseEntity<?> addOrganization(@RequestBody Organization organization) {
-        return ResponseEntity.ok(organizationService.addOrganization(organization));
+    public ResponseEntity<?> addOrganization(@RequestBody Organization organization)
+            throws ConstraintViolationException, OrganizationCollectionException {
+        try {
+            organizationService.addOrganization(organization);
+            return new ResponseEntity<Organization>(organization, HttpStatus.OK);
+            // return ResponseEntity.ok(o);
+        } catch (ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (OrganizationCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @DeleteMapping("/organization")
+    public ResponseEntity<?> deleteOrganization(
+            @RequestParam(name = "organizationName") String organizationName) {
+        try {
+            organizationService.deleteOrganization(organizationName);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (OrganizationCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+        // // String s = organizationService.deleteOrganization(organizationName);
+        // if (s == null) {
+        // return ResponseEntity.ok("This Organization is not Available");
+        // }
+        // return ResponseEntity.ok(s);
     }
 
     @GetMapping("/organization")
@@ -41,7 +85,7 @@ public class HomeController {
     }
 
     @GetMapping("/organization/{organizationName}")
-    public ResponseEntity<?> getDonorByName(@PathVariable String organizationName) {
+    public ResponseEntity<?> getByOrganizationName(@PathVariable String organizationName) {
         return ResponseEntity.ok(this.organizationService.findAllByFirstName(organizationName));
     }
 
@@ -55,19 +99,88 @@ public class HomeController {
         return ResponseEntity.ok(bloodService.getBloodGroup());
     }
 
+    @GetMapping("/bloodgroup/{bloodId}")
+    public ResponseEntity<?> getBloodGroupById(@PathVariable String bloodId) {
+        return ResponseEntity.ok(bloodService.getBloodGroupById(bloodId));
+    }
+
     @PostMapping("/Donor")
-    public ResponseEntity<?> addDonor(@RequestBody Donor donor) {
-        return ResponseEntity.ok(donorService.addToDonor(donor));
+    public ResponseEntity<?> addDonor(@RequestBody Donor donor)
+            throws ConstraintViolationException, OrganizationCollectionException {
+
+        try {
+            return new ResponseEntity<Object>(donorService.addToDonor(donor), HttpStatus.OK);
+        } catch (ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (OrganizationCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @PutMapping("/Donor/{donorId}")
+    public ResponseEntity<?> updateDonor(@PathVariable @NotBlank String donorId, @RequestBody Donor donor)
+            throws ConstraintViolationException, OrganizationCollectionException, DonorCollectionException {
+        try {
+            return new ResponseEntity<>(donorService.updateDonor(donorId, donor), HttpStatus.OK);
+        } catch (ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (OrganizationCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (DonorCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+
+    }
+
+    @DeleteMapping("/Donor/{donorId}")
+    public ResponseEntity<?> deleteDonor(@PathVariable String donorId)
+            throws ConstraintViolationException, DonorCollectionException {
+        try {
+            donorService.deleteById(donorId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (DonorCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+    // @GetMapping("/Donor")
+    // public ResponseEntity<?> getDonor() {
+    // return ResponseEntity.ok(donorService.getDonor());
+    // }
+
+    @GetMapping("/stockAsPerOrganization")
+    public ResponseEntity<?> getStockAsPerOrganization(
+            @RequestParam(name = "organizationName") @NotNull String organizationName) {
+        try {
+            return new ResponseEntity<>(stockAsPerOrganizationService.findAllByOname(organizationName), HttpStatus.OK);
+        } catch (ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        // if (organizationName.isEmpty()) {
+        // return ResponseEntity.ok("Please Enter Organization Name!");
+        // }
+        // List<?> l = (List<?>)
+        // stockAsPerOrganizationService.findAllByOname(organizationName);
+        // if (l == null) {
+        // return ResponseEntity.ok("No such Organization is Registered");
+        // }
+        // return ResponseEntity.ok(l);
+        // return
+        // ResponseEntity.ok(stockAsPerOrganizationService.findAllByOname(organizationName));
     }
 
     @GetMapping("/Donor")
-    public ResponseEntity<?> getDonor() {
-        return ResponseEntity.ok(donorService.getDonor());
-    }
+    public ResponseEntity<?> getDonorInPage(@RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "2") int pageSize,
+            @RequestParam(name = "sortBy", defaultValue = "_id") String sortBy) {
+        return ResponseEntity.ok(donorService.getAllDonorInPage(pageNo, pageSize, sortBy));
 
-    @GetMapping("/stockAsPerOrganization/{organizationName}")
-    public ResponseEntity<?> getStockAsPerOrganization(@PathVariable String organizationName) {
-        return ResponseEntity.ok(stockAsPerOrganizationService.findAllByOname(organizationName));
+        // return "Page No:-" + pageNo + " , Page Size:-" + pageSize + " and Sort By:- "
+        // + sortBy;
     }
 
     // // Add New Donor Here

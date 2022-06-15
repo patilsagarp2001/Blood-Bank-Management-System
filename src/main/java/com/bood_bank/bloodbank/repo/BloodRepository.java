@@ -8,4 +8,6 @@ public interface BloodRepository extends MongoRepository<BloodGroup, Integer> {
 
     BloodGroup findByBname(String bname);
 
+    BloodGroup findBy_id(String bloodId);
+
 }

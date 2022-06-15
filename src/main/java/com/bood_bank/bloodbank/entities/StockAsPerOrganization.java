@@ -1,13 +1,19 @@
 package com.bood_bank.bloodbank.entities;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.data.annotation.Id;
 
 public class StockAsPerOrganization {
 
     @Id
     private String _id;
+    @NotBlank
     private String oid;
+    @NotBlank
     private String bid;
+    @Min(0)
     private int quantityAvl;
 
     public String get_id() {

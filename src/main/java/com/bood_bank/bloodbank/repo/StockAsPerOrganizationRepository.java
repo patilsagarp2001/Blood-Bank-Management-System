@@ -12,4 +12,14 @@ public interface StockAsPerOrganizationRepository extends MongoRepository<StockA
 
     List<StockAsPerOrganization> findAllByOid(String get_id);
 
+    List<StockAsPerOrganization> findOidAndQuantityAvlByOid(String get_id);
+
+    List<StockAsPerOrganization> findBidAndQuantityAvlByOid(String get_id);
+
+    // void deleteAllBy_id(String organizationId);
+
+    void deleteByOid(String organizationId);
+
+    void deleteAllByOid(String get_id);
+
 }

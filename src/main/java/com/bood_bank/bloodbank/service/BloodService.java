@@ -1,28 +1,18 @@
 package com.bood_bank.bloodbank.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bood_bank.bloodbank.entities.BloodGroup;
-import com.bood_bank.bloodbank.repo.BloodRepository;
 
 @Service
-public class BloodService {
+public interface BloodService {
 
-    @Autowired
-    private BloodRepository bloodRepository;
+    String findAllByFirstName(String bname);
 
-    public Object addBloodGroup(BloodGroup bloodGroup) {
-        return bloodRepository.save(bloodGroup);
-    }
+    String getBloodGroupById(String bloodId);
 
-    public Object getBloodGroup() {
-        return this.bloodRepository.findAll();
-    }
+    Object getBloodGroup();
 
-    public String findAllByFirstName(String bname) {
-        BloodGroup b = (BloodGroup) this.bloodRepository.findByBname(bname);
-        return b.get_id();
-    }
+    Object addBloodGroup(BloodGroup bloodGroup);
 
 }

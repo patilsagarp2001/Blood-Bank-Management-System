@@ -1,28 +1,16 @@
 package com.bood_bank.bloodbank.service;
 
-import java.util.List;
+import javax.validation.ConstraintViolationException;
+import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bood_bank.bloodbank.entities.Organization;
-import com.bood_bank.bloodbank.entities.StockAsPerOrganization;
-import com.bood_bank.bloodbank.repo.OrganizationRepository;
-import com.bood_bank.bloodbank.repo.StockAsPerOrganizationRepository;
+import com.bood_bank.bloodbank.exception.OrganizationCollectionException;
 
 @Service
-public class StockAsPerOrganizationService {
+public interface StockAsPerOrganizationService {
 
-    @Autowired
-    private StockAsPerOrganizationRepository stockAsPerOrganizationRepository;
-    @Autowired
-    private OrganizationRepository organizationRepository;
-
-    public List<StockAsPerOrganization> findAllByOname(String organizationName) {
-        Organization o = (Organization) organizationRepository.findByOname(organizationName);
-
-        List<StockAsPerOrganization> so = stockAsPerOrganizationRepository.findAllByOid(o.get_id());
-        return so;
-    }
+    Object findAllByOname(@NotNull String organizationName)
+            throws ConstraintViolationException, OrganizationCollectionException;
 
 }
