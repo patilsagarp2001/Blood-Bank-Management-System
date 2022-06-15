@@ -3,9 +3,11 @@ package com.bood_bank.bloodbank.repo;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import com.bood_bank.bloodbank.entities.StockAsPerOrganization;
 
+@Repository
 public interface StockAsPerOrganizationRepository extends MongoRepository<StockAsPerOrganization, String> {
 
     StockAsPerOrganization findByOidAndBid(String temp_oid, String temp_bid);

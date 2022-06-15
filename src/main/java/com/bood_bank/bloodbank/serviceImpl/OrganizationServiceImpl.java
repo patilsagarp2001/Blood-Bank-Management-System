@@ -1,11 +1,9 @@
 package com.bood_bank.bloodbank.serviceImpl;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.ConstraintViolationException;
 
-import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

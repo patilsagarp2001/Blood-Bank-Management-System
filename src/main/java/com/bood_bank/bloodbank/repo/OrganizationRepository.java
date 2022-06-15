@@ -1,12 +1,12 @@
 package com.bood_bank.bloodbank.repo;
 
-import java.util.Optional;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import com.bood_bank.bloodbank.entities.BloodGroup;
 import com.bood_bank.bloodbank.entities.Organization;
 
+@Repository
 public interface OrganizationRepository extends MongoRepository<Organization, String> {
 
     Object findAllByOname(String organizationName);

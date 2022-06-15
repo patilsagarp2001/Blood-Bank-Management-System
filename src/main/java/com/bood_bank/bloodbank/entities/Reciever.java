@@ -1,46 +1,56 @@
 package com.bood_bank.bloodbank.entities;
 
+import java.time.LocalDate;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "recievers")
+@Document(collection = "reciever")
 public class Reciever {
-
-    @Transient
-    public static final String SEQUENCE_NAME = "us_sequence";
-
     @Id
-    private long rid;
+    public String _id;
+    @NotBlank(message = "Name Should not be blank!")
+    @Size(min = 1, max = 64, message = "Size should be min 1")
     private String rname;
-    private long rmobile;
+    @NotNull(message = "Mobile Number not be Null")
+    @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile Number length should be 10")
+    private String rmobile;
+    @NotBlank(message = "Gender not be Blank!!!")
     private String rgender;
+    @NotNull(message = "Age not be Null")
+    @Min(18)
+    private int rage;
+    @NotNull(message = "Please input your email.")
+    @Email(message = "Email format is wrong.")
     private String remail;
-    private int oid;
-    private int bid;
+    @NotBlank(message = "Blood Group not be blank!!!")
+    @Pattern(regexp = "(A|B|AB|O)[+-]")
+    private String bname;
+    @NotBlank(message = "Organization Name not be blank!!!")
+    private String oname;
+    @NotNull(message = "Quantity Donated not be Null")
+    @Min(value = 1, message = "must be greater than 0")
     private int quantityReq;
+    // @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    // private Date date = new Date();
+    private LocalDate date = LocalDate.now();
 
-    public Reciever(String rname, long rmobile, String rgender, String remail, int oid, int bid,
-            int quantityReq) {
-        this.rname = rname;
-        this.rmobile = rmobile;
-        this.rgender = rgender;
-        this.remail = remail;
-        this.oid = oid;
-        this.bid = bid;
-        this.quantityReq = quantityReq;
+    // private LocalDate date = LocalDate.parse("2021-12-01");
+    private String status = "Pending";
+
+    public String get_id() {
+        return _id;
     }
 
-    public static String getSequenceName() {
-        return SEQUENCE_NAME;
-    }
-
-    public long getRid() {
-        return rid;
-    }
-
-    public void setRid(long rid) {
-        this.rid = rid;
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public String getRname() {
@@ -51,11 +61,11 @@ public class Reciever {
         this.rname = rname;
     }
 
-    public long getRmobile() {
+    public String getRmobile() {
         return rmobile;
     }
 
-    public void setRmobile(long rmobile) {
+    public void setRmobile(String rmobile) {
         this.rmobile = rmobile;
     }
 
@@ -67,6 +77,14 @@ public class Reciever {
         this.rgender = rgender;
     }
 
+    public int getRage() {
+        return rage;
+    }
+
+    public void setRage(int rage) {
+        this.rage = rage;
+    }
+
     public String getRemail() {
         return remail;
     }
@@ -75,20 +93,20 @@ public class Reciever {
         this.remail = remail;
     }
 
-    public int getOid() {
-        return oid;
+    public String getBname() {
+        return bname;
     }
 
-    public void setOid(int oid) {
-        this.oid = oid;
+    public void setBname(String bname) {
+        this.bname = bname;
     }
 
-    public int getBid() {
-        return bid;
+    public String getOname() {
+        return oname;
     }
 
-    public void setBid(int bid) {
-        this.bid = bid;
+    public void setOname(String oname) {
+        this.oname = oname;
     }
 
     public int getQuantityReq() {
@@ -99,4 +117,19 @@ public class Reciever {
         this.quantityReq = quantityReq;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

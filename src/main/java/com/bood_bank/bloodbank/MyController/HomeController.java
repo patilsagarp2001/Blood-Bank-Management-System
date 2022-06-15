@@ -1,12 +1,8 @@
 package com.bood_bank.bloodbank.MyController;
 
-import java.util.List;
-
 import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,13 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bood_bank.bloodbank.entities.BloodGroup;
 import com.bood_bank.bloodbank.entities.Donor;
 import com.bood_bank.bloodbank.entities.Organization;
+import com.bood_bank.bloodbank.entities.Reciever;
 import com.bood_bank.bloodbank.exception.DonorCollectionException;
 import com.bood_bank.bloodbank.exception.OrganizationCollectionException;
+import com.bood_bank.bloodbank.exception.RecieverCollectionException;
 import com.bood_bank.bloodbank.service.BloodService;
 import com.bood_bank.bloodbank.service.DonorService;
 import com.bood_bank.bloodbank.service.OrganizationService;
+import com.bood_bank.bloodbank.service.RecieverService;
 import com.bood_bank.bloodbank.service.StockAsPerOrganizationService;
-import com.mongodb.lang.NonNull;
 
 @RestController
 @Validated
@@ -38,6 +36,8 @@ public class HomeController {
 
     @Autowired
     private DonorService donorService;
+    @Autowired
+    private RecieverService recieverService;
     @Autowired
     private BloodService bloodService;
 
@@ -145,6 +145,53 @@ public class HomeController {
         }
     }
 
+    @PostMapping("/Reciever")
+    public ResponseEntity<?> addReciever(@RequestBody Reciever reciever)
+            throws ConstraintViolationException, OrganizationCollectionException {
+        try {
+            return new ResponseEntity<Object>(recieverService.addToReciever(reciever), HttpStatus.OK);
+        } catch (ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (OrganizationCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("/Reciever")
+    public ResponseEntity<?> getReciever(@RequestParam(name = "pageNo", defaultValue = "0") int pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "2") int pageSize,
+            @RequestParam(name = "sortBy", defaultValue = "_id") String sortBy,
+            @RequestParam(name = "status", defaultValue = "Pending") String status) {
+        return ResponseEntity.ok(recieverService.getRecieverInPage(pageNo, pageSize, sortBy, status));
+
+        // return "Page No:-" + pageNo + " , Page Size:-" + pageSize + " and Sort By:- "
+        // + sortBy;
+    }
+
+    @PutMapping("/Reciever/{recieverId}")
+    public ResponseEntity<?> compeletedReciever(@PathVariable @NotBlank String recieverId)
+            throws RecieverCollectionException {
+        try {
+            recieverService.compeletedReciever(recieverId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RecieverCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+
+    }
+
+    @DeleteMapping("/Reciever/{recieverId}")
+    public ResponseEntity<?> deleteReciever(@PathVariable String recieverId)
+            throws ConstraintViolationException, RecieverCollectionException {
+        try {
+            recieverService.deleteById(recieverId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (RecieverCollectionException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
     // @GetMapping("/Donor")
     // public ResponseEntity<?> getDonor() {
     // return ResponseEntity.ok(donorService.getDonor());

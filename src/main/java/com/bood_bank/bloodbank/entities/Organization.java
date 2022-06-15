@@ -1,6 +1,5 @@
 package com.bood_bank.bloodbank.entities;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
